@@ -11,8 +11,12 @@ A professional web application for students to document their assignments, probl
 
 ### 📝 Document Management
 - **Multiple Problems Support** - Document multiple problems in a single assignment
-- **Structured Sections** - Organize your work with Problem Description, Issues, Solutions, and Notes
-- **Image Support** - Upload and embed screenshots, diagrams, or photos for each problem
+- **4-Section Structure** - Follows instructor requirements:
+  1. What Caused the Problem? (What did you see/experience?)
+  2. How Did You Find It? (What command did you use? What did you see?)
+  3. What Fixed the Problem? (What command did you use? Where?)
+  4. How Did You Know It Was Fixed? (Verification and evidence)
+- **Section-Specific Image Support** - Upload evidence screenshots for investigation and verification steps
 - **Professional PDF Export** - Generate beautifully formatted PDFs with automatic page breaks
 
 ### ✨ Text Enhancement
@@ -38,7 +42,7 @@ A professional web application for students to document their assignments, probl
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/assignment-documenter.git
+   git clone https://github.com/hmalvee/assignment-documenter.git
    cd assignment-documenter
    ```
 
@@ -78,21 +82,25 @@ npm run preview
    - Date (required)
 
 2. **Add Problems**
-   - Click "+ Add Problem" to add multiple problems
-   - Each problem can have:
-     - Problem Description
-     - Issues Identified
-     - Solutions Implemented
-     - Related Images
+   - Click "+ Add Problem" (top or bottom) to add multiple problems
+   - Each problem includes 4 required sections:
+     - **What Caused the Problem?** - Describe what you saw/experienced
+     - **How Did You Find It?** - What commands did you use? What did you see?
+       - Add evidence screenshots (commands, outputs, investigation steps)
+     - **What Fixed the Problem?** - What commands did you use? Where?
+     - **How Did You Know It Was Fixed?** - How did you verify the fix?
+       - Add verification screenshots (before/after, test results, proof)
+   - Use upload button or press **Ctrl+V** to paste images directly
 
 3. **Enhance Your Text**
    - Click the "✨ Rephrase" button next to any text field
    - The tool will automatically improve grammar and fix errors
    - Wait for processing to complete
 
-4. **Add Images**
-   - Click "📷 Upload Images" for any problem
-   - Select one or multiple images
+4. **Add Evidence Images**
+   - **Investigation Evidence**: Add screenshots in "How Did You Find It?" section
+   - **Verification Evidence**: Add screenshots in "How Did You Know It Was Fixed?" section
+   - Click "📷 Add Screenshots" or press **Ctrl+V** to paste from clipboard
    - Preview images before generating PDF
    - Remove images if needed
 
@@ -107,11 +115,11 @@ npm run preview
 
 ## 🎯 Use Cases
 
-- **Technical Assignments** - Document coding problems, debugging steps, and solutions
-- **Lab Reports** - Structure your experiments, findings, and conclusions
-- **Project Documentation** - Track issues, solutions, and learnings
-- **Academic Assignments** - Professional documentation for any course
-- **Problem-Solving Logs** - Keep detailed records of problems and solutions
+- **Technical Assignments** - Document problems following the 4-section structure (Cause, Discovery, Solution, Verification)
+- **Lab Reports** - Structure your troubleshooting process with commands and evidence
+- **Project Documentation** - Track issues, investigation methods, solutions, and verification
+- **Academic Assignments** - Professional documentation that meets instructor requirements
+- **Problem-Solving Logs** - Keep detailed records with commands, outputs, and verification steps
 
 ## 🛠️ Technologies Used
 
