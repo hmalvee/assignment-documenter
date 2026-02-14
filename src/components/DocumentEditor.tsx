@@ -217,7 +217,7 @@ const DocumentEditor = () => {
           const textareaElement = closestTextarea as HTMLTextAreaElement
           const textareaId = textareaElement.id || ''
           const prevSibling = textareaElement.previousElementSibling as HTMLElement | null
-          if (textareaId.includes('howDidYouFindIt') || prevSibling?.querySelector('h4')?.textContent?.includes('How Did You Find It')) {
+          if (textareaId.includes('howDidYouFindIt') || prevSibling?.querySelector('h4')?.textContent?.includes('How Did You Find')) {
             return { problemId, section: 'howDidYouFindIt' }
           } else if (textareaId.includes('howDidYouKnowFixed') || prevSibling?.querySelector('h4')?.textContent?.includes('How Did You Know')) {
             return { problemId, section: 'howDidYouKnowFixed' }
@@ -323,6 +323,13 @@ const DocumentEditor = () => {
     }
   }, [activeProblemId, documentData.problems])
 
+  // Cleanup: restore body scroll when component unmounts
+  useEffect(() => {
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [])
+
   const handleGeneratePDF = async () => {
     await generatePDF(documentData)
   }
@@ -333,6 +340,8 @@ const DocumentEditor = () => {
       const blob = await generatePDFBlob(documentData)
       const url = URL.createObjectURL(blob)
       setPreviewPdfUrl(url)
+      // Simple body scroll lock - just prevent overflow
+      document.body.style.overflow = 'hidden'
     } catch (error) {
       console.error('Error generating PDF preview:', error)
       showToast('Failed to generate PDF preview. Please try again.')
@@ -346,6 +355,8 @@ const DocumentEditor = () => {
       URL.revokeObjectURL(previewPdfUrl)
       setPreviewPdfUrl(null)
     }
+    // Restore body scroll when modal is closed
+    document.body.style.overflow = ''
   }
 
   const handleRephrase = async (
@@ -538,7 +549,7 @@ const DocumentEditor = () => {
             <div className="form-section">
               <div className="textarea-header">
                 <label>
-                  <h4>2. How Did You Find It?</h4>
+                  <h4>2. How Did You Find the Problem?</h4>
                   <p className="label-hint">
                     What command did you use? What did you see? Describe your investigation process.
                   </p>
@@ -656,7 +667,7 @@ const DocumentEditor = () => {
             <div className="form-section">
               <div className="textarea-header">
                 <label>
-                  <h4>4. How Did You Know It Was Fixed?</h4>
+                  <h4>4. How Did You Know the Problem Was Fixed?</h4>
                   <p className="label-hint">
                     How did you verify the problem was resolved? What evidence confirmed the fix?
                   </p>

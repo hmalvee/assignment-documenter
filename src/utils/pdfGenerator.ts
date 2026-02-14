@@ -64,44 +64,98 @@ export const generatePDF = async (data: DocumentData) => {
   const addImageToPDF = async (imageData: string): Promise<number> => {
     try {
       const img = new Image()
+      img.crossOrigin = 'anonymous'
       img.src = imageData
 
       return new Promise((resolve) => {
-        img.onload = () => {
-          const imgWidth = img.width
-          const imgHeight = img.height
-          const ratio = imgWidth / imgHeight
-
-          // Calculate dimensions to fit within page width
-          let displayWidth = maxWidth
-          let displayHeight = displayWidth / ratio
-
-          // If image is too tall, scale it down
-          if (displayHeight > pageHeight - yPosition - 30) {
-            displayHeight = pageHeight - yPosition - 30
-            displayWidth = displayHeight * ratio
-          }
-
-          checkNewPage(displayHeight + 20)
-
-          // Center the image
-          const xPosition = (pageWidth - displayWidth) / 2
-
-          doc.addImage(
-            imageData,
-            'JPEG',
-            xPosition,
-            yPosition,
-            displayWidth,
-            displayHeight
-          )
-
-          yPosition += displayHeight + 10
+        const timeout = setTimeout(() => {
+          console.warn('Image load timeout')
           resolve(yPosition)
+        }, 10000)
+
+        img.onload = () => {
+          clearTimeout(timeout)
+          try {
+            const imgWidth = img.width
+            const imgHeight = img.height
+            
+            if (imgWidth === 0 || imgHeight === 0) {
+              console.warn('Invalid image dimensions')
+              resolve(yPosition)
+              return
+            }
+
+            const ratio = imgWidth / imgHeight
+
+            // Calculate dimensions to fit within page width
+            let displayWidth = maxWidth
+            let displayHeight = displayWidth / ratio
+
+            // If image is too tall, scale it down
+            if (displayHeight > pageHeight - yPosition - 30) {
+              displayHeight = pageHeight - yPosition - 30
+              displayWidth = displayHeight * ratio
+            }
+
+            checkNewPage(displayHeight + 20)
+
+            // Center the image
+            const xPosition = (pageWidth - displayWidth) / 2
+
+            // Detect image format from data URL
+            let imageFormat = 'JPEG' // default
+            if (imageData.startsWith('data:image/')) {
+              const formatMatch = imageData.match(/data:image\/([^;]+)/)
+              if (formatMatch) {
+                const format = formatMatch[1].toUpperCase()
+                if (format === 'PNG') {
+                  imageFormat = 'PNG'
+                } else if (format === 'JPEG' || format === 'JPG') {
+                  imageFormat = 'JPEG'
+                } else {
+                  imageFormat = 'JPEG' // fallback
+                }
+              }
+            }
+
+            // Convert WEBP or other formats to JPEG if needed
+            let finalImageData = imageData
+            if (imageData.includes('webp') || imageData.includes('WEBP')) {
+              try {
+                const canvas = document.createElement('canvas')
+                canvas.width = imgWidth
+                canvas.height = imgHeight
+                const ctx = canvas.getContext('2d')
+                if (ctx) {
+                  ctx.drawImage(img, 0, 0)
+                  finalImageData = canvas.toDataURL('image/jpeg', 0.95)
+                  imageFormat = 'JPEG'
+                }
+              } catch (e) {
+                console.warn('Could not convert image, using original:', e)
+              }
+            }
+
+            doc.addImage(
+              finalImageData,
+              imageFormat,
+              xPosition,
+              yPosition,
+              displayWidth,
+              displayHeight
+            )
+
+            yPosition += displayHeight + 10
+            resolve(yPosition)
+          } catch (error) {
+            console.error('Error adding image to PDF:', error)
+            resolve(yPosition)
+          }
         }
 
-        img.onerror = () => {
-          // If image fails to load, just continue
+        img.onerror = (error) => {
+          clearTimeout(timeout)
+          console.error('Error loading image for PDF:', error)
           resolve(yPosition)
         }
       })
@@ -218,7 +272,7 @@ export const generatePDF = async (data: DocumentData) => {
         doc.setFont('helvetica', 'bold')
         doc.setTextColor(102, 126, 234)
         yPosition = addWrappedText(
-          '2. How Did You Find It?',
+          '2. How Did You Find the Problem?',
           margin,
           yPosition,
           maxWidth,
@@ -282,7 +336,7 @@ export const generatePDF = async (data: DocumentData) => {
         doc.setFont('helvetica', 'bold')
         doc.setTextColor(102, 126, 234)
         yPosition = addWrappedText(
-          '4. How Did You Know It Was Fixed?',
+          '4. How Did You Know the Problem Was Fixed?',
           margin,
           yPosition,
           maxWidth,
@@ -463,44 +517,98 @@ export const generatePDFBlob = async (data: DocumentData): Promise<Blob> => {
   const addImageToPDF = async (imageData: string): Promise<number> => {
     try {
       const img = new Image()
+      img.crossOrigin = 'anonymous'
       img.src = imageData
 
       return new Promise((resolve) => {
-        img.onload = () => {
-          const imgWidth = img.width
-          const imgHeight = img.height
-          const ratio = imgWidth / imgHeight
-
-          // Calculate dimensions to fit within page width
-          let displayWidth = maxWidth
-          let displayHeight = displayWidth / ratio
-
-          // If image is too tall, scale it down
-          if (displayHeight > pageHeight - yPosition - 30) {
-            displayHeight = pageHeight - yPosition - 30
-            displayWidth = displayHeight * ratio
-          }
-
-          checkNewPage(displayHeight + 20)
-
-          // Center the image
-          const xPosition = (pageWidth - displayWidth) / 2
-
-          doc.addImage(
-            imageData,
-            'JPEG',
-            xPosition,
-            yPosition,
-            displayWidth,
-            displayHeight
-          )
-
-          yPosition += displayHeight + 10
+        const timeout = setTimeout(() => {
+          console.warn('Image load timeout')
           resolve(yPosition)
+        }, 10000)
+
+        img.onload = () => {
+          clearTimeout(timeout)
+          try {
+            const imgWidth = img.width
+            const imgHeight = img.height
+            
+            if (imgWidth === 0 || imgHeight === 0) {
+              console.warn('Invalid image dimensions')
+              resolve(yPosition)
+              return
+            }
+
+            const ratio = imgWidth / imgHeight
+
+            // Calculate dimensions to fit within page width
+            let displayWidth = maxWidth
+            let displayHeight = displayWidth / ratio
+
+            // If image is too tall, scale it down
+            if (displayHeight > pageHeight - yPosition - 30) {
+              displayHeight = pageHeight - yPosition - 30
+              displayWidth = displayHeight * ratio
+            }
+
+            checkNewPage(displayHeight + 20)
+
+            // Center the image
+            const xPosition = (pageWidth - displayWidth) / 2
+
+            // Detect image format from data URL
+            let imageFormat = 'JPEG' // default
+            if (imageData.startsWith('data:image/')) {
+              const formatMatch = imageData.match(/data:image\/([^;]+)/)
+              if (formatMatch) {
+                const format = formatMatch[1].toUpperCase()
+                if (format === 'PNG') {
+                  imageFormat = 'PNG'
+                } else if (format === 'JPEG' || format === 'JPG') {
+                  imageFormat = 'JPEG'
+                } else {
+                  imageFormat = 'JPEG' // fallback
+                }
+              }
+            }
+
+            // Convert WEBP or other formats to JPEG if needed
+            let finalImageData = imageData
+            if (imageData.includes('webp') || imageData.includes('WEBP')) {
+              try {
+                const canvas = document.createElement('canvas')
+                canvas.width = imgWidth
+                canvas.height = imgHeight
+                const ctx = canvas.getContext('2d')
+                if (ctx) {
+                  ctx.drawImage(img, 0, 0)
+                  finalImageData = canvas.toDataURL('image/jpeg', 0.95)
+                  imageFormat = 'JPEG'
+                }
+              } catch (e) {
+                console.warn('Could not convert image, using original:', e)
+              }
+            }
+
+            doc.addImage(
+              finalImageData,
+              imageFormat,
+              xPosition,
+              yPosition,
+              displayWidth,
+              displayHeight
+            )
+
+            yPosition += displayHeight + 10
+            resolve(yPosition)
+          } catch (error) {
+            console.error('Error adding image to PDF:', error)
+            resolve(yPosition)
+          }
         }
 
-        img.onerror = () => {
-          // If image fails to load, just continue
+        img.onerror = (error) => {
+          clearTimeout(timeout)
+          console.error('Error loading image for PDF:', error)
           resolve(yPosition)
         }
       })
@@ -617,7 +725,7 @@ export const generatePDFBlob = async (data: DocumentData): Promise<Blob> => {
         doc.setFont('helvetica', 'bold')
         doc.setTextColor(102, 126, 234)
         yPosition = addWrappedText(
-          '2. How Did You Find It?',
+          '2. How Did You Find the Problem?',
           margin,
           yPosition,
           maxWidth,
@@ -704,7 +812,7 @@ export const generatePDFBlob = async (data: DocumentData): Promise<Blob> => {
         doc.setFont('helvetica', 'bold')
         doc.setTextColor(102, 126, 234)
         yPosition = addWrappedText(
-          '4. How Did You Know It Was Fixed?',
+          '4. How Did You Know the Problem Was Fixed?',
           margin,
           yPosition,
           maxWidth,
